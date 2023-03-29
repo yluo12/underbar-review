@@ -104,7 +104,6 @@
   };
 
   // Produce a duplicate-free version of the array.
-  // the program expects three arguments, if we only pass in two, second argument will be treated as isSorted
   _.uniq = function(array, isSorted, iterator) {
     var uniqueArr = [];
     var transformedArr = [];
@@ -124,6 +123,11 @@
     // map() is a useful primitive iteration function that works a lot
     // like each(), but in addition to running the operation on all
     // the members, it also maintains an array of results.
+    var mapped = [];
+    _.each(collection, function (element) {
+      mapped.push(iterator(element));
+    });
+    return mapped;
   };
 
   /*
@@ -164,7 +168,19 @@
   //     return total + number * number;
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
+  //im trying to find zoom link lol
+
   _.reduce = function(collection, iterator, accumulator) {
+    //var acc;
+    if (accumulator === undefined) {
+      accumulator = collection[0];
+      collection = collection.slice(1);
+    }
+    _.each(collection, function (element) {
+      accumulator = iterator(accumulator, element);
+    });
+
+    return accumulator;
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -183,12 +199,25 @@
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
     // TIP: Try re-using reduce() here.
+    iterator = iterator || _.identity;
+    return _.reduce(collection, function (acc, item) {
+      if (!iterator(item)) {
+        acc = false;
+      }
+      return acc;
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
     // TIP: There's a very clever way to re-use every() here.
+    iterator = iterator || _.identity;
+    return (! _.every(collection, function (item) {
+      if (!iterator(item)) {
+        return true;
+      }
+    }));
   };
 
 
@@ -211,6 +240,14 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var args = Array.prototype.slice.call(arguments).slice(1);
+    var destination = Array.prototype.slice.call(arguments)[0];
+    _.each(args, function (object) {
+      _.each(object, function (key) {
+        destination[key] = object[key];
+      });
+    });
+    return destination;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
