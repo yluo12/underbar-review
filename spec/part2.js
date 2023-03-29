@@ -197,7 +197,7 @@
         var destination = {a: 'x'};
         var source = { a: 'b' };
         var extended = _.extend(destination, source);
-        expect(destination).to.equal({a: 'b'});
+        expect(destination).to.eql({a: 'b'});
 
       });
 
@@ -276,7 +276,12 @@
       it('should copy any property whose key is not already set on the target', function() {
         // Replace this line with an `expect` statement that tests
         // the behavior described by the `it` string
-        throw new Error('This test is missing.');
+        var destination = { a: 10 };
+        var source = { b: 1, c: 2 };
+
+        _.defaults(destination, source);
+
+        expect(destination).to.eql({ a: 10, b: 1, c: 2 });
       });
 
       it('should not copy a property if that key is already set on the target', function() {
@@ -425,6 +430,7 @@
 
       it('should not run the memoized function twice when given a reference type as an argument', function() {
         // Be careful how you are checking if a set of arguments has been passed in already
+        debugger;
         var spy = sinon.spy(function() { return 'Dummy output'; });
         var memoSpy = _.memoize(spy);
 
@@ -484,6 +490,7 @@
       });
 
       it('should maintain same array length', function() {
+        //debugger;
         var numbers = [1, 1, 2, 3];
         var shuffled = _.shuffle(numbers);
 

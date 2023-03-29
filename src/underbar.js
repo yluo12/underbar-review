@@ -240,19 +240,30 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
-    var args = Array.prototype.slice.call(arguments).slice(1);
-    var destination = Array.prototype.slice.call(arguments)[0];
+    var args = Array.from(arguments).slice(1);
+    var destination = Array.from(arguments)[0];
     _.each(args, function (object) {
-      _.each(object, function (key) {
-        destination[key] = object[key];
+      _.each(object, function (value, key) {
+        destination[key] = value;
       });
     });
+
     return destination;
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var args = Array.from(arguments).slice(1);
+    var destination = Array.from(arguments)[0];
+    _.each(args, function (object) {
+      _.each(object, function (value, key) {
+        if (destination[key] === undefined) {
+          destination[key] = value;
+        }
+      });
+    });
+    return destination;
   };
 
 
@@ -296,6 +307,18 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+    var caches = new Map();
+
+    return function() {
+      var args = JSON.stringify(Array.from(arguments));
+
+      if (caches.has(args)) {
+        return func;
+      } else {
+        caches.set(args, func.apply(this, arguments));
+        return caches.get(args);
+      }
+    };
   };
 
   // Delays a function for the given number of milliseconds, and then calls
@@ -305,6 +328,10 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    var args = Array.from(arguments);
+    return setTimeout(function () {
+      return func.apply(this, args.slice(2));
+    }, wait);
   };
 
 
@@ -319,6 +346,18 @@
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
   _.shuffle = function(array) {
+    var shuffled = [];
+    var indexArr = [];
+    // create random number 0-array.length - 1 [1, 2, 3, 4]
+    // Math.random() 0-1
+    while (indexArr.length < array.length) {
+      var randomNum = Math.floor(Math.random() * (array.length));
+      if (_.indexOf(indexArr, randomNum) === -1) {
+        indexArr.push(randomNum);
+        shuffled.push(array[randomNum]);
+      }
+    }
+    return shuffled;
   };
 
 
