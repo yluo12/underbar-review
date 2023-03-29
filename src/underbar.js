@@ -313,7 +313,7 @@
       var args = JSON.stringify(Array.from(arguments));
 
       if (caches.has(args)) {
-        return func;
+        return caches.get(args);
       } else {
         caches.set(args, func.apply(this, arguments));
         return caches.get(args);
